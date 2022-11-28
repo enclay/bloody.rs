@@ -2,7 +2,6 @@ extern crate rusb;
 
 use crate::io;
 use crate::opcode;
-
 use rusb::{DeviceHandle, GlobalContext};
 
 pub struct Mouse {
