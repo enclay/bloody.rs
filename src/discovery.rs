@@ -3,15 +3,15 @@ use crate::opcode;
 
 pub fn bloody_devices() -> Vec<Device<GlobalContext>> {
 
-    let mut devs = Vec::new();
+    let mut devices = Vec::new();
 
-    for device in rusb::devices().unwrap().iter() {
-        let device_desc = device.device_descriptor().unwrap();
+    rusb::devices().unwrap().iter().for_each(|dev| {
+        let desc = dev.device_descriptor().unwrap();
 
-        if device_desc.vendor_id() == opcode::A4TECH_PRODUCT {
-            devs.push(device);
+        if desc.vendor_id() == opcode::A4TECH_PRODUCT {
+            devices.push(dev);
         }
-    }
-
-    devs
+    });
+    
+    devices
 }

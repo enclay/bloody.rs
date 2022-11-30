@@ -16,6 +16,7 @@ fn main() {
 
         let handle = device.open().unwrap();
         let mouse = Mouse::new(handle);
-        mouse.set_backlight(0);
+        mouse.set_backlight(2);
+        println!("Current backlight sensivity = {}", mouse.get_backlight());
     }
 }
