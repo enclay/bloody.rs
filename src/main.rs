@@ -1,5 +1,10 @@
 extern crate rusb;
 
+use gtk::prelude::*;
+use libappindicator::{AppIndicator, AppIndicatorStatus};
+use std::cell::RefCell;
+use std::rc::Rc;
+use glib::clone;
 use crate::mouse::Mouse;
 
 mod mouse;
@@ -8,15 +13,51 @@ mod request_type;
 mod discovery;
 mod opcode;
 
+
+fn create_level_item(mouse: &Rc<RefCell<Mouse>>, level: u8) -> gtk::MenuItem {
+    let item = gtk::MenuItem::with_label(format!("level {}", level).as_str());
+
+    item.connect_activate(clone!(@strong mouse => move |_| {
+        mouse.borrow_mut().set_backlight(level);
+    }));
+
+    return item;
+}
+
+fn init_mouse() -> Mouse {
+
+    let firstdevice = discovery::bloody_devices();
+    let device = firstdevice.first().unwrap();
+    
+    let description = device.device_descriptor().unwrap();
+    println!("Found compatible device: {}", description.product_id());
+
+    let handle = device.open().unwrap();
+    return Mouse::new(handle);
+}
+
+fn create_tray_menu(mouse: Rc<RefCell<Mouse>>) -> gtk::Menu {
+    let menu = gtk::Menu::new();
+
+    menu.append(&create_level_item(&mouse, 0));
+    menu.append(&create_level_item(&mouse, 1));
+    menu.append(&create_level_item(&mouse, 2));
+    menu.append(&create_level_item(&mouse, 3));
+
+    return menu;
+}
+
 fn main() {
-    for device in discovery::bloody_devices() {
+    gtk::init().unwrap();
 
-        let description = device.device_descriptor().unwrap();
-        println!("Found compatible device: {}", description.product_id());
+    let mut indicator = AppIndicator::new("bloody tray widget", "");
+    indicator.set_status(AppIndicatorStatus::Active);
 
-        let handle = device.open().unwrap();
-        let mouse = Mouse::new(handle);
-        mouse.set_backlight(2);
-        println!("Current backlight sensivity = {}", mouse.get_backlight());
-    }
+    let mouse = Rc::new(RefCell::new(init_mouse()));
+    let mut menu = create_tray_menu(mouse);
+
+    indicator.set_menu(&mut menu);
+    menu.show_all();
+
+    gtk::main();
 }

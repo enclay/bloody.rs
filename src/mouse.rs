@@ -34,4 +34,5 @@ impl Mouse {
         let response = self._dev.read(&buf);
         return response[8];
     }
+
 }

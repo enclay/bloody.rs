@@ -4,7 +4,6 @@ use crate::request_type::{calc_request_type, Direction, Type, Recipient};
 use rusb::{DeviceHandle, GlobalContext};
 use std::time::Duration;
 
-
 pub struct Device {
    _handle: DeviceHandle<GlobalContext>
 }
@@ -22,7 +21,7 @@ impl Device {
         let res = self._handle.write_control(WRITE_TYPE, 9, 0x0307, 2, &buffer, Duration::new(10, 0));
         match res {
             Ok(_) => {  },
-            Err(_) => println!("Write: error")
+            Err(err) => println!("Write: error {}", err )
         }
     }
 
