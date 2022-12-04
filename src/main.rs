@@ -19,22 +19,23 @@ fn create_level_item(mouse: &Rc<RefCell<Mouse>>, level: u8) -> gtk::MenuItem {
         mouse.borrow_mut().set_backlight(level);
     }));
 
-    return item;
+    item
 }
 
-fn init_mouse() -> Mouse {
+fn create_mouse() -> Mouse {
 
-    let firstdevice = discovery::bloody_devices();
-    let device = firstdevice.first().unwrap();
+    let devices = discovery::bloody_devices();
+    let device = devices.first().unwrap();
     
     let description = device.device_descriptor().unwrap();
     println!("Found compatible device: {}", description.product_id());
 
     let handle = device.open().unwrap();
-    let mut m = Mouse::new(handle);
-    m.detach_driver_if_needed();
-    m.claim();
-    return m;
+    let mut mouse = Mouse::new(handle);
+    mouse.detach_driver_if_needed();
+    mouse.claim();
+
+    mouse
 }
 
 fn create_tray_menu(mouse: Rc<RefCell<Mouse>>) -> gtk::Menu {
@@ -45,7 +46,7 @@ fn create_tray_menu(mouse: Rc<RefCell<Mouse>>) -> gtk::Menu {
     menu.append(&create_level_item(&mouse, 2));
     menu.append(&create_level_item(&mouse, 3));
 
-    return menu;
+    menu
 }
 
 fn main() {
@@ -54,7 +55,7 @@ fn main() {
     let mut indicator = AppIndicator::new("bloody tray widget", "");
     indicator.set_status(AppIndicatorStatus::Active);
 
-    let mouse = Rc::new(RefCell::new(init_mouse()));
+    let mouse = Rc::new(RefCell::new(create_mouse()));
     let mut menu = create_tray_menu(mouse);
 
     indicator.set_menu(&mut menu);
