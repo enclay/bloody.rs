@@ -8,11 +8,9 @@ use glib::clone;
 use crate::mouse::Mouse;
 
 mod mouse;
-mod io;
-mod request_type;
+mod reqtype;
 mod discovery;
 mod opcode;
-
 
 fn create_level_item(mouse: &Rc<RefCell<Mouse>>, level: u8) -> gtk::MenuItem {
     let item = gtk::MenuItem::with_label(format!("level {}", level).as_str());
@@ -33,7 +31,10 @@ fn init_mouse() -> Mouse {
     println!("Found compatible device: {}", description.product_id());
 
     let handle = device.open().unwrap();
-    return Mouse::new(handle);
+    let mut m = Mouse::new(handle);
+    m.detach_driver_if_needed();
+    m.claim();
+    return m;
 }
 
 fn create_tray_menu(mouse: Rc<RefCell<Mouse>>) -> gtk::Menu {

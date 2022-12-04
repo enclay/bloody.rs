@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 pub enum Direction {
     Out = 0,
     In = 1,

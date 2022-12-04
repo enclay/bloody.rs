@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 pub const A4TECH_PRODUCT: u16 = 0x9da;
 pub const A4TECH_MAGIC: u8 = 0x7;
 
