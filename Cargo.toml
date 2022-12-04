@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 rusb = "0.9"
-glib = "0.16.4"
 gtk = "0.15"
+glib = "0.16.4"
 gtk-sys = "0.15"
 libappindicator = "0.7.1"
