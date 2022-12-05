@@ -20,3 +20,9 @@ cargo run
 echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="09da", MODE="0666"' | sudo tee /etc/udev/rules.d/a4.rules
 # Replug the mouse to reapply new udev settings
 ```
+
+# Screenshots
+> **Note:** If you don't see tray icons on gnome, ensure you have [AppIndicator extension](https://extensions.gnome.org/extension/615/appindicator-support/) enabled
+
+![screenshot1](./assets/screenshot1.png)
+![screenshot2](./assets/screenshot2.png)
