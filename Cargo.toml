@@ -9,3 +9,4 @@ gtk = "0.15"
 glib = "0.16.4"
 gtk-sys = "0.15"
 libappindicator = "0.7.1"
+clap = { version = "4.0.29", features = ["derive"] }

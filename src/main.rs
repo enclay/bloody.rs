@@ -1,37 +1,17 @@
 extern crate rusb;
-
-use glib::clone;
-use gtk::prelude::*;
-use gtk::RadioMenuItem;
-use libappindicator::{AppIndicator, AppIndicatorStatus};
+extern crate clap;
 
 use crate::mouse::Mouse;
 
-use std::cell::RefCell;
-use std::rc::Rc;
-use std::env;
-use std::path::Path;
+use clap::Parser;
+use cli::*;
 
 mod mouse;
 mod reqtype;
 mod discovery;
 mod opcode;
-
-fn create_level_item(previous: Option<&RadioMenuItem>, m: &Rc<RefCell<Mouse>>, level: u8) -> RadioMenuItem {
-
-    let item = match previous {
-        Some(pr) => RadioMenuItem::from_widget(pr),
-        None => RadioMenuItem::new()
-    };
-
-    item.set_label(format!("Level {}", level).as_str());
-
-    item.connect_activate(clone!(@strong m => move |_| {
-        m.borrow_mut().set_backlight(level);
-    }));
-
-    item
-}
+mod gtk;
+mod cli;
 
 fn create_mouse() -> Mouse {
 
@@ -49,42 +29,31 @@ fn create_mouse() -> Mouse {
     mouse
 }
 
-fn create_tray_menu(mouse: Rc<RefCell<Mouse>>) -> gtk::Menu {
-    let menu = gtk::Menu::new();
-    
-    let item0 = &create_level_item(None, &mouse, 0);    
-    let item1 = &create_level_item(Some(item0), &mouse, 1);    
-    let item2 = &create_level_item(Some(item1), &mouse, 2);
-    let item3 = &create_level_item(Some(item2), &mouse, 3);
+fn get_level() {
+    let mouse = create_mouse();
+    println!("Current mouse intensity: {}", mouse.get_backlight());
+}
 
-    menu.append(item0);
-    menu.append(item1);
-    menu.append(item2);
-    menu.append(item3);
+fn set_level(level: u8) {
+    let mouse = create_mouse();
+    mouse.set_backlight(level);
 
-
-    menu.append(&gtk::SeparatorMenuItem::new());
-    menu.append(&gtk::MenuItem::with_label("Show Settings"));
-
-    menu
+    println!("{} {}", match mouse.get_backlight() == level {
+        true => "Intensity succesfully set to:",
+        false => "Failed to change intensity to" 
+    }, level);
 }
 
 fn main() {
-    gtk::init().unwrap();
+    let cli = Cli::parse();
 
-    let mut indicator = AppIndicator::new("bloody tray widget", "");
+    if cli.tray {
+        return gtk::main(create_mouse());
+    }
 
-    let icon_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("assets");
-    indicator.set_icon_theme_path(icon_path.to_str().unwrap());
-    indicator.set_icon_full("white_mouse", "icon");
-
-    indicator.set_status(AppIndicatorStatus::Active);
-
-    let mouse = Rc::new(RefCell::new(create_mouse()));
-    let mut menu = create_tray_menu(mouse);
-
-    indicator.set_menu(&mut menu);
-    menu.show_all();
-
-    gtk::main();
+    match cli.command {
+        Some(Action::Level) => get_level(),
+        Some(Action::SetLevel { level }) => set_level(level),
+        None => println!("type help to see command list")
+    }           
 }
