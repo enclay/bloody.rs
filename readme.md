@@ -11,6 +11,13 @@ cd bloody.rs
 cargo run
 ```
 
+# Install
+
+```
+cargo install --path .
+echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+```
+
 # USB device access fix (linux)
 
 * By default, you need to be root to access USB devices
