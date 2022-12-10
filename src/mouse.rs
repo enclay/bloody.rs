@@ -5,7 +5,6 @@ extern crate rusb;
 use rusb::{DeviceHandle, GlobalContext};
 use std::time::Duration;
 
-use crate::opcode::BACKLIGHT_READ;
 use crate::reqtype::*;
 use crate::opcode;
 
@@ -35,7 +34,7 @@ impl Mouse {
         let buf: [u8; 6] = [
             opcode::A4TECH_MAGIC,
             opcode::BACKLIGHT_OPCODE, 0, 0,
-            BACKLIGHT_READ, 0
+            opcode::BACKLIGHT_READ, 0
         ];
 
         let response = self.read(&buf);

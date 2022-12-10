@@ -1,8 +1,7 @@
 extern crate rusb;
 extern crate clap;
 
-use crate::mouse::Mouse;
-
+use mouse::Mouse;
 use clap::Parser;
 use cli::*;
 

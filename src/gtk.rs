@@ -1,9 +1,8 @@
-
 extern crate rusb;
 
 use glib::clone;
 use gtk::prelude::*;
-use gtk::RadioMenuItem;
+use gtk::{RadioMenuItem, MenuItem};
 use libappindicator::{AppIndicator, AppIndicatorStatus};
 
 use crate::mouse::Mouse;
@@ -29,13 +28,29 @@ fn create_level_item(previous: Option<&RadioMenuItem>, m: &Rc<RefCell<Mouse>>, l
     item
 }
 
+fn create_quit_item() -> MenuItem {
+    let item = gtk::MenuItem::with_label("Turn off");
+    item.connect_activate(|_| gtk::main_quit());
+    item
+}
+
 fn create_tray_menu(mouse: Rc<RefCell<Mouse>>) -> gtk::Menu {
     let menu = gtk::Menu::new();
     
+    let default_level = mouse.borrow_mut().get_backlight(); 
+
     let item0 = &create_level_item(None, &mouse, 0);    
     let item1 = &create_level_item(Some(item0), &mouse, 1);    
     let item2 = &create_level_item(Some(item1), &mouse, 2);
     let item3 = &create_level_item(Some(item2), &mouse, 3);
+
+    match default_level {
+        0 => item0.activate(),
+        1 => item1.activate(),
+        2 => item2.activate(),
+        3 => item3.activate(),
+        _ => false
+    };
 
     menu.append(item0);
     menu.append(item1);
@@ -44,7 +59,7 @@ fn create_tray_menu(mouse: Rc<RefCell<Mouse>>) -> gtk::Menu {
 
 
     menu.append(&gtk::SeparatorMenuItem::new());
-    menu.append(&gtk::MenuItem::with_label("Show Settings"));
+    menu.append(&create_quit_item());
 
     menu
 }

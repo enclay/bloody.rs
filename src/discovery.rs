@@ -1,4 +1,4 @@
-use crate::rusb::{GlobalContext, Device};
+use rusb::{GlobalContext, Device};
 use crate::opcode;
 
 
