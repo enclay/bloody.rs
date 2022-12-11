@@ -15,7 +15,7 @@ use std::path::Path;
 fn create_level_item(previous: Option<&RadioMenuItem>, m: &Rc<RefCell<Mouse>>, level: u8) -> RadioMenuItem {
 
     let item = match previous {
-        Some(pr) => RadioMenuItem::from_widget(pr),
+        Some(w) => RadioMenuItem::from_widget(w),
         None => RadioMenuItem::new()
     };
 

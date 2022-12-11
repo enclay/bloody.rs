@@ -37,10 +37,12 @@ fn set_level(level: u8) {
     let mouse = create_mouse();
     mouse.set_backlight(level);
 
-    println!("{} {}", match mouse.get_backlight() == level {
-        true => "Intensity succesfully set to:",
-        false => "Failed to change intensity to" 
-    }, level);
+    if mouse.get_backlight() == level {
+        println!("Intensity succesfully set to: {}", level);
+    }
+    else {
+        println!("Failed to change intensity to {}", level);
+    }
 }
 
 fn main() {

@@ -53,9 +53,9 @@ impl Mouse {
     pub fn write(&self, buffer: &[u8]) {
 
         let res = self.handle.write_control(WRITE_TYPE, 9, 0x0307, 2, &buffer, Duration::new(10, 0));
-        match res {
-            Ok(_) => {  },
-            Err(err) => println!("Write: error {}", err )
+
+        if res.is_err() {
+            println!("Error: write() failed");
         }
     }
 
@@ -65,9 +65,8 @@ impl Mouse {
         let response = &mut[0; 72];
 
         let res = self.handle.read_control(READ_TYPE, 1, 0x0307, 2, response, Duration::new(10, 0));
-        match res {
-            Ok(_) => {  },
-            Err(_) => println!("Read: error")
+        if res.is_err() {
+            println!("Error: read() failed");
         }
         
         response.to_vec()
