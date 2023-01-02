@@ -1,18 +1,16 @@
 extern crate rusb;
 
-use glib::clone;
 use gtk::prelude::*;
 use gtk::{RadioMenuItem, MenuItem};
 use libappindicator::{AppIndicator, AppIndicatorStatus};
 
 use crate::mouse::Mouse;
 
-use std::cell::RefCell;
 use std::rc::Rc;
 use std::env;
 use std::path::Path;
 
-fn create_level_item(previous: Option<&RadioMenuItem>, m: &Rc<RefCell<Mouse>>, level: u8) -> RadioMenuItem {
+fn create_level_item(previous: Option<&RadioMenuItem>, m: Rc<Mouse>, level: u8) -> RadioMenuItem {
 
     let item = match previous {
         Some(w) => RadioMenuItem::from_widget(w),
@@ -21,9 +19,9 @@ fn create_level_item(previous: Option<&RadioMenuItem>, m: &Rc<RefCell<Mouse>>, l
 
     item.set_label(format!("Level {}", level).as_str());
 
-    item.connect_activate(clone!(@strong m => move |_| {
-        m.borrow_mut().set_backlight(level);
-    }));
+    item.connect_activate(move |_| {
+        m.set_backlight(level);
+    });
 
     item
 }
@@ -34,15 +32,15 @@ fn create_quit_item() -> MenuItem {
     item
 }
 
-fn create_tray_menu(mouse: Rc<RefCell<Mouse>>) -> gtk::Menu {
+fn create_tray_menu(mouse: Rc<Mouse>) -> gtk::Menu {
     let menu = gtk::Menu::new();
     
-    let default_level = mouse.borrow_mut().get_backlight(); 
+    let default_level = mouse.get_backlight(); 
 
-    let item0 = &create_level_item(None, &mouse, 0);    
-    let item1 = &create_level_item(Some(item0), &mouse, 1);    
-    let item2 = &create_level_item(Some(item1), &mouse, 2);
-    let item3 = &create_level_item(Some(item2), &mouse, 3);
+    let item0 = &create_level_item(None, Rc::clone(&mouse), 0);    
+    let item1 = &create_level_item(Some(item0), Rc::clone(&mouse), 1);    
+    let item2 = &create_level_item(Some(item1), Rc::clone(&mouse), 2);
+    let item3 = &create_level_item(Some(item2), Rc::clone(&mouse), 3);
 
     match default_level {
         0 => item0.activate(),
@@ -75,7 +73,7 @@ pub fn main(mouse: Mouse) {
 
     indicator.set_status(AppIndicatorStatus::Active);
 
-    let mut menu = create_tray_menu(Rc::new(RefCell::new(mouse)));
+    let mut menu = create_tray_menu(Rc::new(mouse));
 
     indicator.set_menu(&mut menu);
     menu.show_all();

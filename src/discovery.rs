@@ -1,7 +1,6 @@
 use rusb::{GlobalContext, Device};
 use crate::opcode;
 
-
 type Devices = Vec<Device<GlobalContext>>;
 
 pub fn bloody_devices() -> Devices {

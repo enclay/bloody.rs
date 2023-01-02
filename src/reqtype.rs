@@ -26,4 +26,3 @@ pub const fn calc_request_type(direction: Direction, reqtype: Type, recipient: R
 
     d << 7 | t << 5 | r
 }
-
